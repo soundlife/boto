@@ -45,6 +45,7 @@ METADATA_PREFIX_KEY = 'metadata_prefix'
 
 AWS_HEADER_PREFIX = 'x-amz-'
 GOOG_HEADER_PREFIX = 'x-goog-'
+ALIYUN_OSS_HEADER_PREFIX = 'x-oss-'
 
 ACL_HEADER_KEY = 'acl-header'
 AUTH_HEADER_KEY = 'auth-header'
@@ -81,31 +82,38 @@ class Provider(object):
                    'aws_security_token', 'aws_profile'),
         'google': ('gs_access_key_id',  'gs_secret_access_key',
                    None, None),
+        'aliyun': ('aliyun_access_key_id', 'aliyun_secret_access_key',
+                   None, None),
     }
 
     AclClassMap = {
         'aws':    Policy,
-        'google': ACL
+        'google': ACL,
+        'aliyun': Policy,
     }
 
     CannedAclsMap = {
         'aws':    CannedS3ACLStrings,
-        'google': CannedGSACLStrings
+        'google': CannedGSACLStrings,
+        'aliyun': CannedS3ACLStrings,
     }
 
     HostKeyMap = {
         'aws':    's3',
-        'google': 'gs'
+        'google': 'gs',
+        'aliyun': 'oss',
     }
 
     ChunkedTransferSupport = {
         'aws':    False,
-        'google': True
+        'google': True,
+        'aliyun': False,
     }
 
     MetadataServiceSupport = {
         'aws': True,
-        'google': False
+        'google': False,
+        'aliyun': False,
     }
 
     # If you update this map please make sure to put "None" for the
@@ -157,7 +165,26 @@ class Provider(object):
             STORAGE_CLASS_HEADER_KEY: None,
             MFA_HEADER_KEY: None,
             RESTORE_HEADER_KEY: None,
-        }
+        },
+        'aliyun': {
+            HEADER_PREFIX_KEY: ALIYUN_OSS_HEADER_PREFIX,
+            METADATA_PREFIX_KEY: ALIYUN_OSS_HEADER_PREFIX + 'meta-',
+            ACL_HEADER_KEY: ALIYUN_OSS_HEADER_PREFIX + 'acl',
+            AUTH_HEADER_KEY: 'OSS',
+            COPY_SOURCE_HEADER_KEY: ALIYUN_OSS_HEADER_PREFIX + 'copy-source',
+            COPY_SOURCE_VERSION_ID_HEADER_KEY: None,
+            COPY_SOURCE_RANGE_HEADER_KEY: None,
+            DATE_HEADER_KEY: None,
+            DELETE_MARKER_HEADER_KEY: ALIYUN_OSS_HEADER_PREFIX + 'delete-marker',
+            METADATA_DIRECTIVE_HEADER_KEY: ALIYUN_OSS_HEADER_PREFIX + 'metadata-directive',
+            RESUMABLE_UPLOAD_HEADER_KEY: None,
+            SECURITY_TOKEN_HEADER_KEY: None,
+            SERVER_SIDE_ENCRYPTION_KEY: None,
+            VERSION_ID_HEADER_KEY: None,
+            STORAGE_CLASS_HEADER_KEY: None,
+            MFA_HEADER_KEY: None,
+            RESTORE_HEADER_KEY: None,
+        },
     }
 
     ErrorMap = {
@@ -174,7 +201,14 @@ class Provider(object):
             STORAGE_DATA_ERROR: boto.exception.GSDataError,
             STORAGE_PERMISSIONS_ERROR: boto.exception.GSPermissionsError,
             STORAGE_RESPONSE_ERROR: boto.exception.GSResponseError,
-        }
+        },
+        'aliyun': {
+            STORAGE_COPY_ERROR: boto.exception.S3CopyError,
+            STORAGE_CREATE_ERROR: boto.exception.S3CreateError,
+            STORAGE_DATA_ERROR: boto.exception.S3DataError,
+            STORAGE_PERMISSIONS_ERROR: boto.exception.S3PermissionsError,
+            STORAGE_RESPONSE_ERROR: boto.exception.S3ResponseError,
+        },
     }
 
     def __init__(self, name, access_key=None, secret_key=None,

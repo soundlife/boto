@@ -929,7 +929,7 @@ class AWSAuthConnection(object):
                 # an older signing method + bucket resource URLs that include
                 # the port info. All others should be now be up to date and
                 # not include the port.
-                if 's3' not in self._required_auth_capability():
+                if 's3' not in self._required_auth_capability() and 'oss' not in self._required_auth_capability():
                     if not getattr(self, 'anon', False):
                         if not request.headers.get('Host'):
                             self.set_host_header(request)

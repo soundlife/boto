@@ -36,6 +36,7 @@ from nose.core import run
 # order to filter on tags nose must load each test - many
 # will fail to import with Python 3.
 PY3_WHITELIST = (
+    'tests/unit/aliyun',
     'tests/unit/auth',
     'tests/unit/beanstalk',
     'tests/unit/cloudformation',
